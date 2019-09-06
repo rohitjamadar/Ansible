@@ -1,0 +1,4 @@
+ansible localhost -m lineinfile -a "regex='^Ansible is Super Awesome'  line='Ansible is Awesome' path=./motd"
+ansible localhost -m lineinfile -a "line='Ansible is Awesome' path=./motd"
+ansible localhost -m copy -a "content='helloooo' path=./motd"
+ansible localhost -m ping 
