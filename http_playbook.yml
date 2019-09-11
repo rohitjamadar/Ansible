@@ -1,0 +1,61 @@
+---
+- name : " Start and run a basic http service"
+  hosts : localhost
+  gather_facts : no
+  become : yes
+  tasks:
+
+    - name : "Installing httpd package"
+      yum : 
+        name : httpd
+        state : latest 
+
+    - name : " Creating  index file "
+      file:
+        path: "/var/www/html/index.html"
+        state: touch
+
+    - name : " Adding content in index.html"
+      lineinfile:
+        line : " I am awesome -- Rohit J "
+        path : "/var/www/html/index.html"
+
+    - name : " Starting httpd service "
+      service : 
+        name : httpd
+        state : started
+        enabled : yes
+
+#    - name : "Adding http Service in Firewall "
+#      firewalld :
+#        service : 
+#         - http
+#         - https
+#         - mountd
+#        state : enabled
+#        permanent : yes
+    - name : "Adding http Service in Firewall "
+      firewalld :         
+        service : http
+        state : enabled
+        permanent : yes
+
+    - name : " Reloading firewall " 
+      command : firewall-cmd --reload
+
+    - name : " listing firewall services to verify"
+      command : firewall-cmd --list-all
+      register :  firewallcmd
+    - debug : var=firewallcmd.stdout_lines
+
+    - name : " Restarting httpd service "
+      service : 
+        name : httpd
+        state : restarted
+        enabled : yes
+
+    - name : "View the Webpage "
+      command : curl vm1.local.com
+      register :  view
+    - debug : var=view.stdout_lines
+
